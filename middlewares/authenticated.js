@@ -28,32 +28,12 @@ const dataLogin = async (req, res, next) => {
     }
 }
 
-const validateUser = async (email, password) => {
-    const userSelected = await models.user.findOne({
-        where: { email: email }
-    })
-    if (userSelected) {
-        if (userSelected.password == password.trim()) {
-            codeToken = generatedToken(userSelected.username, userSelected.isAdmin)
-            const dataUser = { name: userSelected.username, isadmin: userSelected.isAdmin }
-                                                          
-            return { codeToken, dataUser };
-        }
-        else {
-            return false;
-        }
-    }
-    else {
-        return false;
-    }
-}
 
 
-function generatedToken(name, isAdmin) {
+function generatedToken(name) {
 
     const payload = {
         nameUser: name,
-        admin: isAdmin,
     }
 
     var token = jwt.sign(payload, jwtClave);
@@ -88,16 +68,6 @@ function validatekeyCode(password) {
     }
     return false;
 }
-
-function validateEmail(value) {
-
-    if (/^([\da-z_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(value)) {
-        return true
-    } else {
-        return false
-    }
-}
-
 const validateJwt = (req, res, next) => {
 
     const codeToken = req.headers.authorization.split(' ')[1];
@@ -110,6 +80,36 @@ const validateJwt = (req, res, next) => {
         next()
     });
 }
+const validateUser = async (email, password) => {
+    const userSelected = await models.user.findOne({
+        where: { email: email }
+    })
+    if (userSelected) {
+        if (userSelected.password == password.trim()) {
+            codeToken = generatedToken(userSelected.username )
+            const dataUser = { name: userSelected.username }
+                                                          
+            return { codeToken, dataUser };
+        }
+        else {
+            return false;
+        }
+    }
+    else {
+        return false;
+    }
+}
+
+function validateEmail(value) {
+
+    if (/^([\da-z_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/.test(value)) {
+        return true
+    } else {
+        return false
+    }
+}
+
+
 
 
 const dataReceived = (req, res, next) => {

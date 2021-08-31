@@ -11,11 +11,10 @@ user.init({
         autoIncrement: true,
         primaryKey: true
     },
-    username: DataTypes.STRING,
-    full_name: DataTypes.STRING,
+    name: DataTypes.STRING,
+    last_name: DataTypes.STRING,
     email: DataTypes.STRING,
-    phone: DataTypes.STRING,
-    adress: DataTypes.STRING,
+    username: DataTypes.STRING,
     password: DataTypes.STRING,
 
 }, {
