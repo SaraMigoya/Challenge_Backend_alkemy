@@ -27,8 +27,8 @@ const genderController = require ("./controllers/genderController");
 const moviesController = require("./controllers/moviesController");
 const usersController = require("./controllers/usersController");
 
-app.use("./characters", characterController);
-app.use("./movies", moviesController);
+app.use("/movies", moviesController);
+app.use("/characters", characterController);
 app.use("/users", usersController);
 
 db.init()

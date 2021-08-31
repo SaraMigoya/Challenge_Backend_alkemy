@@ -17,7 +17,6 @@ movie_serie.init({
         type: DataTypes.TEXT
     },
     title: DataTypes.STRING,
-    age: DataTypes.STRING,
     creation_date: DataTypes.STRING,
     score: DataTypes.INTEGER,
     //acá iria personaje asociado
