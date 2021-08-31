@@ -2,27 +2,34 @@ const express = require('express');
 const logger = require('morgan');
 const bodyParser  = require('body-parser');
 const db = require("./conexion")
+
 const modelsUser = require ("./models/user")
 const modelsCharacter = require ("./models/character")
 const modelsMovie = require ("./models/movie")
 const modelsGender = require ("./models/gender")
 
-
-modelsMovie.movie_serie.hasMany(modelsGender.gender)
-modelsCharacter.character.belongsTo(modelsMovie.movie_serie)
-modelsMovie.movie_serie.hasMany(modelsCharacter.character)
-
-
-
-
-
 // Set up the express app
 const app = express();
+
 // Log requests to the console.
 app.use(logger('dev'));
 // Parse incoming requests data (https://github.com/expressjs/body-parser)
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+//Associations
+modelsMovie.movie_serie.hasMany(modelsGender.gender)
+modelsCharacter.character.belongsTo(modelsMovie.movie_serie)
+modelsMovie.movie_serie.hasMany(modelsCharacter.character)
+
+const characterController = require("./controllers/characterController");
+const genderController = require ("./controllers/genderController");
+const moviesController = require("./controllers/moviesController");
+const usersController = require("./controllers/usersController");
+
+app.use("./characters", characterController);
+app.use("./movies", moviesController);
+app.use("/users", usersController);
 
 db.init()
     .then(async () => {
