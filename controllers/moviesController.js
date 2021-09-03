@@ -1,6 +1,7 @@
 const express = require("express");
 const models = require("../models/movie")
 const modelCharacter = require("../models/character")
+const modelGender = require("../models/gender")
 const router = express.Router();
 
 
@@ -27,15 +28,64 @@ router.post("/", async (req, res) => {
     /// GET
     .get("/", async (req, res) => {
 
-        const allMovies = await models.movie.findAll({
+        /* const allMovies = await models.movie.findAll({
             attributes: ["image", "title", "creation_date"],
 
         });
-        if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies });
-        return res.status(400).json({ message: "error. no se pudo traer info" })
+
+
+        if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies }); */
+
+        let name = req.query.name
+        let genre = req.query.genre
+        console.log(genre)
+    
+        if (genre) {
+
+            const allGenders = await modelGender.gender.findOne({
+                where: {MovieId: genre}
+            })
+
+            console.log(allGenders)
+
+            if (genre && genre == allGenders.MovieId) return res.status(200).json({ exito: "si! gender" });
+            else return res.status(400).json({ message: "error. no se pudo traer info" })
+        }
+
+        //let MovieId = req.query.MovieId
+
+ /*        if (name) {
+
+            const movies = await models.movie.findOne({
+                where: { name: name }
+            })
+
+            if (name && name == movies.name) return res.status(200).json({ exito: "si! name" });
+            else return res.status(400).json({ message: "error. no se pudo traer info" })
+        }
+
+        if (MovieId) {
+
+            const movies = await models.movie.findOne({
+                where: { MovieId: MovieId }
+            })
+
+            if (MovieId && MovieId == movies.MovieId) return res.status(200).json({ exito: "si! id" });
+            else return res.status(400).json({ message: "error. no se pudo traer info" })
+        }
+        else {
+
+            const movies = await models.movie.findOne({
+                where: { age: age }
+            })
+            if (age && age == movies.age) return res.status(200).json({ exito: " si! age" });
+            else return res.status(400).json({ message: "error. no se pudo traer info" })
+
+        } */
+        else return res.status(400).json({ message: "error. no se pudo traer info" })
     })
 
-    .get("/details", async (req, res) => {
+/*     .get("/details", async (req, res) => {
 
         const allMovies = await models.movie.findAll({
 
@@ -53,7 +103,7 @@ router.post("/", async (req, res) => {
         if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies });
         return res.status(400).json({ message: "error. no se pudo traer info" })
     })
-
+ */
     //acá irian los get con búsqueda
 
 

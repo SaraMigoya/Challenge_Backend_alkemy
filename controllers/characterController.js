@@ -1,8 +1,7 @@
 const express = require("express");
 const models = require("../models/character")
 const modelsMovies = require("../models/movie");
-const modelsUsers = require("../models/user")
-const { validateJwt, dataLogin } = require("../middlewares/authenticated");
+
 const router = express.Router();
 
 router.post("/", async (req, res) => {
@@ -31,57 +30,58 @@ router.post("/", async (req, res) => {
 
 
 })
-/// GET
-/*   .get("/", async (req,res)=>{
 
-        const allCharacter = await models.character.findAll({
-            attributes: ["image","name"],
+    /// GET
 
-        });
-        if (allCharacter.length > 0) return res.status(200).json( {exito: "operación exitosa", allCharacter});
-        return res.status(400).json({message: "error. no se pudo traer info"})
-    })  */
-/// GET
+    .get("/", async (req, res) => {
+        /*         
+                const allCharacter = await models.character.findAll({
+                    attributes: ["image","name"],
+        
+                });
+                if (allCharacter.length > 0) return res.status(200).json( {exito: "operación exitosa", allCharacter}); */
+
+        let name = req.query.name
+        let age = req.query.age
+        let movies = req.query.movies
 
 
 
+        if (name) {
 
-router.get("/", async (req, res) => {
+            const characters = await models.character.findOne({
+                where: { name: name }
+            })
 
-    let name = req.query.name
-    let age = req.query.age
-    let MovieId = req.query.MovieId
+            if (characters && name == characters.name) return res.status(200).json({ exito: `El personaje encontrado es: ${characters.name}` });
+            else return res.status(400).json({ message: "error. no se pudo traer inf!!o" })
 
-    if (name) {
+        }
+        if (age) {
+            const characters = await models.character.findOne({
+                where: { age: age }
+            })
+            if (characters && age == characters.age ) {
 
-        const characters = await models.character.findOne({
-            where: { name: name }
-        })
+                return res.status(200).json({ exito: `La edad del personaje es ${characters.age} ` });
+            }
+            else {
+           
+                return res.status(400).json({ message: "error. no se pudo traer info2" })
+            }
+        }
+        if (movies) {
 
-        if (name && name == characters.name) return res.status(200).json({ exito: "si! name" });
-        else return res.status(400).json({ message: "error. no se pudo traer info" })
-    }
+            const characters = await models.character.findOne({
+                where: { MovieId: movies }
+            })
 
-    if (MovieId) {
+            if (characters && movies == characters.MovieId) return res.status(200).json({ exito: `El id de la película encontrada es: ${characters.MovieId}` });
+            else return res.status(400).json({ message: "error. no se pudo traer info3" })
+        }
 
-        const characters = await models.character.findOne({
-            where: { MovieId: MovieId }
-        })
 
-        if (MovieId && MovieId == characters.MovieId) return res.status(200).json({ exito: "si! id" });
-        else return res.status(400).json({ message: "error. no se pudo traer info" })
-    }
-    else {
-
-        const characters = await models.character.findOne({
-            where: { age: age }
-        })
-        if (age && age == characters.age) return res.status(200).json({ exito: " si! age" });
-        else return res.status(400).json({ message: "error. no se pudo traer info" })
-
-    }
-})
-
+    })
 
     .get("/details", async (req, res) => {
 

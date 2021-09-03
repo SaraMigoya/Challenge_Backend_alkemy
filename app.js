@@ -30,6 +30,7 @@ const usersController = require("./controllers/usersController");
 app.use("/movies", moviesController);
 app.use("/characters", characterController);
 app.use("/users", usersController);
+app.use("/genders", genderController);
 
 db.init()
     .then(async () => {
