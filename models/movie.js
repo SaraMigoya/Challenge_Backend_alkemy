@@ -4,8 +4,8 @@ const { Model, DataTypes } = require('sequelize');
 
 sequelize.define()
 
-class movie_serie extends Model { }
-movie_serie.init({
+class movie extends Model { }
+movie.init({
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -23,9 +23,9 @@ movie_serie.init({
 
 }, {
     sequelize,
-    modelName: "Movie_Serie"
+    modelName: "Movie"
 });
 
 
 
-module.exports = {movie_serie}
+module.exports = {movie}

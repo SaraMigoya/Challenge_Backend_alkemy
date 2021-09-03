@@ -4,6 +4,33 @@ var jwtClave = process.env.JWTPASSWORD
 var codeToken;
 const models = require("../models/user");
 
+
+
+const dataReceived = (req, res, next) => {
+    const { name, last_name, email, username, password} = req.body;
+    if (!name || !last_name || !email || !username || !password) {
+        return res.status(400).json({
+            error: 'faltan campos'
+        })
+    }
+ 
+    if (validateEmail(email) === false) {
+        return res.status(400).json({
+            error: 'Email incorrecto'
+        })
+    }
+
+    if (validatekeyCode(password) === false) {
+        return res.status(400).json({
+            error: 'Password incorrecto'
+        })
+    }
+
+    
+
+    next()
+}
+
 const dataLogin = async (req, res, next) => {
     const { email, password } = req.body
 
@@ -29,11 +56,12 @@ const dataLogin = async (req, res, next) => {
 }
 
 
-
-function generatedToken(name) {
+function generatedToken(name, id) {
 
     const payload = {
         nameUser: name,
+        idUser: id
+
     }
 
     var token = jwt.sign(payload, jwtClave);
@@ -69,7 +97,6 @@ function validatekeyCode(password) {
     return false;
 }
 const validateJwt = (req, res, next) => {
-
     const codeToken = req.headers.authorization.split(' ')[1];
 
     jwt.verify(codeToken, jwtClave, (err, decoded) => {
@@ -86,8 +113,8 @@ const validateUser = async (email, password) => {
     })
     if (userSelected) {
         if (userSelected.password == password.trim()) {
-            codeToken = generatedToken(userSelected.username )
-            const dataUser = { name: userSelected.username }
+            codeToken = generatedToken(userSelected.username, userSelected.id )
+            const dataUser = { name: userSelected.username, id: userSelected.id}
                                                           
             return { codeToken, dataUser };
         }
@@ -110,30 +137,4 @@ function validateEmail(value) {
 }
 
 
-
-
-const dataReceived = (req, res, next) => {
-    const { name, last_name, email, username, password} = req.body;
-    if (!name || !last_name || !email || !username || !password) {
-        return res.status(400).json({
-            error: 'faltan campos'
-        })
-    }
- 
-    if (validateEmail(email) === false) {
-        return res.status(400).json({
-            error: 'Email incorrecto'
-        })
-    }
-
-    if (validatekeyCode(password) === false) {
-        return res.status(400).json({
-            error: 'Password incorrecto'
-        })
-    }
-
-    
-
-    next()
-}
 module.exports = {dataLogin, validatekeyCode, validateEmail, generatedToken, validateUser, validateJwt, dataReceived}

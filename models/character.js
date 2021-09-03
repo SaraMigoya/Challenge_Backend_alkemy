@@ -22,7 +22,6 @@ character.init({
     weight: DataTypes.STRING,
     story: DataTypes.STRING,
 
-
 }, {
     sequelize,
     modelName: "Character"

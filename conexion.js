@@ -2,7 +2,7 @@ const Sequelize = require('sequelize');
 const config = require('./config');
 
 
-const {host, port, username, password, database} = config.database;
+const { host, port, username, password, database } = config.database;
 const sequelize = new Sequelize({
     username,
     database,
@@ -11,7 +11,7 @@ const sequelize = new Sequelize({
     port,
     dialect: 'mysql',
     logging: false
-    
+
 });
 
 const init = async () => {
@@ -21,4 +21,4 @@ const init = async () => {
 
 
 
-module.exports = {init, sequelize, Sequelize};
+module.exports = { init, sequelize, Sequelize };

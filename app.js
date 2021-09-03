@@ -1,12 +1,12 @@
 const express = require('express');
 const logger = require('morgan');
-const bodyParser  = require('body-parser');
+const bodyParser = require('body-parser');
 const db = require("./conexion")
 
-const modelsUser = require ("./models/user")
-const modelsCharacter = require ("./models/character")
-const modelsMovie = require ("./models/movie")
-const modelsGender = require ("./models/gender")
+const modelsUser = require("./models/user")
+const modelsCharacter = require("./models/character")
+const modelsMovie = require("./models/movie")
+const modelsGender = require("./models/gender")
 
 // Set up the express app
 const app = express();
@@ -18,12 +18,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 //Associations
-modelsMovie.movie_serie.hasMany(modelsGender.gender)
-modelsCharacter.character.belongsTo(modelsMovie.movie_serie)
-modelsMovie.movie_serie.hasMany(modelsCharacter.character)
+modelsMovie.movie.hasMany(modelsGender.gender)
+modelsCharacter.character.belongsTo(modelsMovie.movie)
+modelsMovie.movie.hasMany(modelsCharacter.character)
 
 const characterController = require("./controllers/characterController");
-const genderController = require ("./controllers/genderController");
+const genderController = require("./controllers/genderController");
 const moviesController = require("./controllers/moviesController");
 const usersController = require("./controllers/usersController");
 
