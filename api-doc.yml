@@ -1,0 +1,566 @@
+openapi: 3.0.1
+info:
+  title: Delilah Resto
+  description: Backend API to explore the world of Disney.
+  contact:
+    email: saramigoyagmail.com
+  version: 1.0.0
+externalDocs:
+  description: Github Repository
+  url: https://github.com/SaraMigoya/Challenge_Backend_alkemy
+servers:
+  - url: https://localhost:3000
+tags:
+  - name: Users
+    description: Operations about user
+  - name: Characters
+    description: Everything about characters
+  - name: Movies
+    description: Everything about movies
+  - name: Genders
+    description: Everything about genders
+
+paths:
+  /users:
+    post:
+      tags:
+        - User
+      summary: Create user
+      description: Creates a new User in the DataBase
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      security: []
+      responses:
+        200:
+          description: User correctly added to database
+        400:
+          description: Error validating input data
+        409:
+          description: Username already exists, please pick another
+        default:
+          $ref: "#/components/responses/Default"
+
+    get:
+      tags:
+        - User
+      summary: Gets list of users or User account details
+      description: Gets a list of all the existing users in the DataBase.
+      operationId: getUserInfo
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfo"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+
+    put:
+      tags:
+        - User
+      summary: Edits active user data
+      operationId: editActiveUserData
+      requestBody:
+        description: Fields to change
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description: Successful operation
+        400:
+          description: Invalid username/password supplied
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        409:
+          description: Username or email already registered
+        default:
+          $ref: "#/components/responses/Default"
+
+    delete:
+      tags:
+        - User
+      summary: Disables user account (validation via token)
+      operationId: deleteActiveUser
+      responses:
+        200:
+          description: User account disabled
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        default:
+          $ref: "#/components/responses/Default"
+
+  /users/auth/login:
+    get:
+      tags:
+        - User
+      security: []
+      summary: Logs user into the system
+      operationId: loginUser
+      parameters:
+        - name: username or email
+          in: query
+          description: The user name or email for login
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Token"
+        400:
+          description: Invalid username/password supplied
+        401:
+          $ref: "#/components/responses/Disabled"
+        default:
+          $ref: "#/components/responses/Default"
+
+  /users/:username:
+    get:
+      tags:
+        - User
+      summary: Get user by user name (only Admin)
+      operationId: getUserByName
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be fetched.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserInfo"
+        401:
+          $ref: "#/components/responses/UnauthorizedAdmin"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+
+    put:
+      tags:
+        - User
+      summary: Edit by username (only Admin)
+      description: Edits a username fetched by its username (Admin Only). The full object can be sent or only the parameters needing to be modified.
+      operationId: updateUserAdmin
+      parameters:
+        - name: username
+          in: path
+          description: name that need to be updated
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Updated user object
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description: "User {username} was modified correctly"
+        401:
+          $ref: "#/components/responses/UnauthorizedAdmin"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+
+    delete:
+      tags:
+        - User
+      summary: Delete(invalidate) user (only Admin)
+      description: This can only be done by a logged in admin.
+      operationId: deleteUserAdmin
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: "User {username} was disabled correctly"
+        401:
+          $ref: "#/components/responses/UnauthorizedAdmin"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+
+  /characters:
+    get:
+      tags:
+        - characters
+      summary: Get list of all available characters
+      description: Returns a list of characters (does NOT list disabled characters)
+      operationId: getCharacters
+      parameters:
+        - name: search
+          in: query
+          description: Keywords to search for
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Products"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+
+    post:
+      tags:
+        - Characters
+      summary: Adds a Characters
+      description: Adds a Characters to database
+      operationId: addCharacters
+      requestBody:
+        description: Keywords to search for
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Characters"
+        required: true
+      responses:
+        200:
+          description: Movies added succesfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+                  example: -2
+        400:
+          description: Error validating input data
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        default:
+          $ref: "#/components/responses/Default"
+
+  /movies:
+    get:
+      tags:
+        - movies
+      summary: Get list of movies
+      description: Returns a list of movies show only the image, title and creation date fields.
+      operationId: getMovies
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movies"
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+
+    post:
+      tags:
+        - Movies
+      summary: Adds a movies
+      description: Adds a movies to database
+      operationId: addMovie
+      requestBody:
+        description: Order to create
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewMovie"
+        required: true
+      responses:
+        200:
+          description: Order modified succesfully
+        400:
+          description: Error validating input data
+        401:
+          $ref: "#/components/responses/Unauthorized"
+        default:
+          $ref: "#/components/responses/Default"
+
+  /movies/details:
+    get:
+      tags:
+        - movies
+      summary: Get list of movies.
+      parameters:
+        - name: details
+          in: path
+          description: return all the fields of the film or series together with the characters associated with it.
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movies"
+        401:
+          $ref: "#/components/responses/UnauthorizedAdmin"
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+
+    put:
+      tags:
+        - Movies
+      summary: Edit by movies
+      description: Edits a specific movies
+      operationId: editOrder
+      parameters:
+        - name: id
+          in: path
+          description: The ID of the movie that needs to be fetched.
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Movie to create
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                orderStatus:
+                  type: string
+                  example: delivered
+        required: true
+      responses:
+        200:
+          description: "Product with id {productId} modified correctly"
+        400:
+          description: Error validating input data
+        401:
+          $ref: "#/components/responses/UnauthorizedAdmin"
+        403:
+          description: The state given for the product is not valid
+        404:
+          $ref: "#/components/responses/NotFound"
+        default:
+          $ref: "#/components/responses/Default"
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 100
+        name:
+          type: string
+          example: ghee_dough
+        username:
+          type: string
+          example: ghee_dough
+        password:
+          type: string
+          example: MySecretPass123
+        email:
+          type: string
+          example: gheedough@gmail.com
+        last_name:
+          type: string
+          example: Guido Torres
+    UserInfo:
+      type: array
+      items:
+        type: object
+        properties:
+          user_id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: ghee_dough
+          username:
+            type: string
+            example: ghee_dough
+          last_name:
+            type: string
+            example: Guido Torres
+          email:
+            type: string
+            example: gheedough@gmail.com
+          is_disabled:
+            type: boolean
+            example: 0
+Character      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Avocado Toast
+        imgage:
+          type: string
+          example: https://via.placeholder.com/150
+        story:
+          type: string
+          example: The film depicts a princess who sets off on a journey alongside an iceman
+        is_disabled:
+          type: boolean
+          example: 0
+    Movies:
+      type: array
+      items:
+        $ref: "#/components/schemas/Movies"
+    OrderProduct:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        product_id:
+          type: integer
+          example: 70
+        score:
+          type: integer
+          example: 70
+        title:
+          type: string
+          example: Frozen
+        creation_date:
+          type: string
+          example: 268.5
+        img:
+          type: text
+          example: https://via.placeholder.com/150
+        is_disabled:
+          type: boolean
+          example: 0
+    Gender:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        image:
+          type: text
+          example: "http://frozen.com"
+        MovieId:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Juvenil
+    Token:
+      type: object
+      properties:
+        token:
+          type: string
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "An error has ocurred: <error>"
+      required:
+        - error
+    Send:
+      type: string
+      example: "Error message"
+      
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  # Reused Responses
+  responses:
+    UnauthorizedError:
+      description: Invalid Token
+    Disabled:
+      description: Invalid request, user account is disabled
+    NotAdmin:
+      description: Operation forbidden, not an admin
+    NotFound:
+      description: The specified resource was not found
+    Default:
+      description: Unexpected error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/Send"
+          examples:
+            Token Invalidation:
+              summary: Unauthorized - Invalid Token
+              value: Unauthorized - Invalid Token
+            Disabled Account:
+              summary: Unauthorized - Account is Disabled
+              value: Unauthorized - User account is disabled
+    UnauthorizedAdmin:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            oneOf:
+              - $ref: "#/components/schemas/Send"
+          examples:
+            Token Invalidation:
+              summary: Unauthorized - Invalid Token
+              value: Unauthorized - Invalid Token
+            Disabled Account:
+              summary: Unauthorized - Account is Disabled
+              value: Unauthorized - User account is disabled
+            Not Admin:
+              summary: Unauthorized - Not an admin
+              value: Unauthorized - Not an admin
+
+security:
+  - bearerAuth: []

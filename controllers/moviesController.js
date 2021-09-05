@@ -25,67 +25,64 @@ router.post("/", async (req, res) => {
     })
 
 })
+
+
     /// GET
     .get("/", async (req, res) => {
 
-        /* const allMovies = await models.movie.findAll({
-            attributes: ["image", "title", "creation_date"],
-
-        });
-
-
-        if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies }); */
-
         let name = req.query.name
         let genre = req.query.genre
-        console.log(genre)
-    
+        //let order = req.query.order
+       
         if (genre) {
 
             const allGenders = await modelGender.gender.findOne({
                 where: {MovieId: genre}
             })
 
-            console.log(allGenders)
 
-            if (genre && genre == allGenders.MovieId) return res.status(200).json({ exito: "si! gender" });
-            else return res.status(400).json({ message: "error. no se pudo traer info" })
+            if (allGenders && genre == allGenders.MovieId) return res.status(200).json({ exito: `el género es: ${allGenders.MovieId}` });
+            else return res.status(400).json({ message: "¡Lo sentimos! No pudimos acceder a esa información. Es probable que no exista" })
         }
 
-        //let MovieId = req.query.MovieId
-
- /*        if (name) {
+        if (name) {
 
             const movies = await models.movie.findOne({
-                where: { name: name }
+                where: {title: name}
             })
 
-            if (name && name == movies.name) return res.status(200).json({ exito: "si! name" });
+
+            if (movies && name.toLocaleLowerCase == movies.title.toLocaleLowerCase) return res.status(200).json({ exito: `el nombre de la película es: ${movies.title}` });
             else return res.status(400).json({ message: "error. no se pudo traer info" })
         }
+       
 
-        if (MovieId) {
+     
+        const dataCreat = await models.movie.findAll({
+            attributes: ["creation_date"],
 
-            const movies = await models.movie.findOne({
-                where: { MovieId: MovieId }
-            })
+        });
 
-            if (MovieId && MovieId == movies.MovieId) return res.status(200).json({ exito: "si! id" });
-            else return res.status(400).json({ message: "error. no se pudo traer info" })
-        }
-        else {
+        
+        dataCreat.sort(function(a,b){return a - b})
+        if (dataCreat.length > 0) return res.status(200).json({ exito: "operación exitosa", dataCreat }); 
+        else return res.status(400).json({ message: "Aún no hay películas guardados" }) 
+   
+        
+        
+        
+          const allMovies = await models.movie.findAll({
+            attributes: ["image", "title", "creation_date"],
 
-            const movies = await models.movie.findOne({
-                where: { age: age }
-            })
-            if (age && age == movies.age) return res.status(200).json({ exito: " si! age" });
-            else return res.status(400).json({ message: "error. no se pudo traer info" })
+        });
 
-        } */
-        else return res.status(400).json({ message: "error. no se pudo traer info" })
+        
+        if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies }); 
+        else return res.status(400).json({ message: "Aún no hay películas guardados" }) 
+       
     })
 
-/*     .get("/details", async (req, res) => {
+     .get("/details", async (req, res) => {
 
         const allMovies = await models.movie.findAll({
 
@@ -103,9 +100,6 @@ router.post("/", async (req, res) => {
         if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies });
         return res.status(400).json({ message: "error. no se pudo traer info" })
     })
- */
-    //acá irian los get con búsqueda
-
 
     /// PUT
     .put("/:id", async (req, res) => {
