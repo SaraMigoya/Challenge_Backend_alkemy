@@ -37,11 +37,20 @@ npm install
 - Inicializar los servicios de Apache y MySQL
 - Abrir el panel de control del servicio MySQL
 - Generar una nueva base de datos llamada `challenge_Backend_Alkemy` desde el panel de control
+
 ### 3 - Iniciando el servidor
 
-Desde la terminal poner el siguiente comando :
+node app.js
 
-node server.js
+### 4 - Generar contenido de "relleno" de base de datos:
+
+Desde la terminal poner el siguiente comando :
+Desde Postman u otro cliente API, realizar peticiones POST para llenar base de datos. Es importante que se realicen en este orden ya que están relacionados por foreignKeys:
+
+localhost:3000/start/users
+localhost:3000/start/movies
+localhost:3000/start/characters
+localhost:3000/start/genders
 
 ### 5 - Listo para usar!
 
@@ -73,7 +82,6 @@ A list of the available endpoints and methods will be listed with the necessary 
 ## Instalation and Project Initialization
 
 
-
 ### 1 - Install the required dependencies
 
 ```
@@ -91,7 +99,16 @@ npm install
 
 From the terminal put the following command:
 
-node server.js
+node app.js
+
+ ### 4 Generate "filling" content for data base:
+
+From Postman or other API client, make the following POST petitions. It is important to respect this order, since models are linked via foreignKeys:
+
+localhost:3000/start/users
+localhost:3000/start/movies
+localhost:3000/start/characters
+localhost:3000/start/genders
 
 ### 5 - It's ready to use!
 

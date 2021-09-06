@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
 
         let name = req.query.name
         let genre = req.query.genre
-        let order = req.query.order 
+        let order = req.query.order
 
         if (genre) {
 
@@ -58,47 +58,36 @@ router.post("/", async (req, res) => {
 
 
 
-           if(order){
+        if (order) {
 
-               console.log("entropoooo")
-       
-               const dataCreat = await models.movie.findAll({
-                   attributes: ["creation_date"],    
-                    });
-                
-               dataCreat.sort(function (a, b) {return a - b })
-                   // dataCreat.reverse(function(a,b){return a - b})
-                
+            const dataCreat = await models.movie.findAll({
+                attributes: ["creation_date"],
+            });
 
-                       if (dataCreat.length > 0) return res.status(200).json({ exito: "operación exitosa", dataCreat });
-                       else return res.status(400).json({ message: "no" })
-                
- 
-           }
+            //dataCreat.sort(function (a, b) { return a - b })
+            dataCreat.reverse(function(a,b){return a - b})
 
-  
-  
-
-     
+            if (dataCreat.length > 0) return res.status(200).json({ exito: "operación exitosa", dataCreat });
+            else return res.status(400).json({ message: "no" })
 
 
+        }
 
-
-        /*   const allMovies = await models.movie.findAll({
+        const allMovies = await models.movie.findAll({
             attributes: ["image", "title", "creation_date"],
 
         });
 
-        
-        if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies }); 
-        else return res.status(400).json({ message: "Aún no hay películas guardados" })  */
+
+        if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies });
+        else return res.status(400).json({ message: "Aún no hay películas guardados" })
 
     })
 
     .get("/details", async (req, res) => {
 
         const allMovies = await models.movie.findAll({
-
+            attributes: ["id","image", "title", "creation_date", "score"],
             include: [
 
                 {
