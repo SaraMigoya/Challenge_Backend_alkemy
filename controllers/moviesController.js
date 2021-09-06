@@ -32,12 +32,12 @@ router.post("/", async (req, res) => {
 
         let name = req.query.name
         let genre = req.query.genre
-        //let order = req.query.order
-       
+        let order = req.query.order 
+
         if (genre) {
 
             const allGenders = await modelGender.gender.findOne({
-                where: {MovieId: genre}
+                where: { MovieId: genre }
             })
 
 
@@ -48,41 +48,54 @@ router.post("/", async (req, res) => {
         if (name) {
 
             const movies = await models.movie.findOne({
-                where: {title: name}
+                where: { title: name }
             })
 
 
             if (movies && name.toLocaleLowerCase == movies.title.toLocaleLowerCase) return res.status(200).json({ exito: `el nombre de la película es: ${movies.title}` });
             else return res.status(400).json({ message: "error. no se pudo traer info" })
         }
+
+
+
+           if(order){
+
+               console.log("entropoooo")
        
+               const dataCreat = await models.movie.findAll({
+                   attributes: ["creation_date"],    
+                    });
+                
+               dataCreat.sort(function (a, b) {return a - b })
+                   // dataCreat.reverse(function(a,b){return a - b})
+                
+
+                       if (dataCreat.length > 0) return res.status(200).json({ exito: "operación exitosa", dataCreat });
+                       else return res.status(400).json({ message: "no" })
+                
+ 
+           }
+
+  
+  
 
      
-        const dataCreat = await models.movie.findAll({
-            attributes: ["creation_date"],
 
-        });
 
-        
-        dataCreat.sort(function(a,b){return a - b})
-        if (dataCreat.length > 0) return res.status(200).json({ exito: "operación exitosa", dataCreat }); 
-        else return res.status(400).json({ message: "Aún no hay películas guardados" }) 
-   
-        
-        
-        
-          const allMovies = await models.movie.findAll({
+
+
+        /*   const allMovies = await models.movie.findAll({
             attributes: ["image", "title", "creation_date"],
 
         });
 
         
         if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies }); 
-        else return res.status(400).json({ message: "Aún no hay películas guardados" }) 
-       
+        else return res.status(400).json({ message: "Aún no hay películas guardados" })  */
+
     })
 
-     .get("/details", async (req, res) => {
+    .get("/details", async (req, res) => {
 
         const allMovies = await models.movie.findAll({
 

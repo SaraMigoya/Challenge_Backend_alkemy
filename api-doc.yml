@@ -21,7 +21,7 @@ tags:
     description: Everything about genders
 
 paths:
-  /users:
+  /auth/register:
     post:
       tags:
         - User
@@ -105,7 +105,7 @@ paths:
         default:
           $ref: "#/components/responses/Default"
 
-  /users/auth/login:
+  /auth/login:
     get:
       tags:
         - User

@@ -1,19 +1,33 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 var jwtClave = process.env.JWTPASSWORD
+const sgMail = require("@sendgrid/mail")
+sgMail.setApiKey(process.env.SENDGRID_API_KEY)
 var codeToken;
 const models = require("../models/user");
 
 
+function sendEmail(emailRegister, welcomeUser) {
 
-const dataReceived = (req, res, next) => {
-    const { name, last_name, email, username, password} = req.body;
+    const msg = {
+        to: emailRegister,
+        from: "satumigoya@hotmail.com",
+        subject: "Welcome to Challenge backend!",
+        text: `Hello ${welcomeUser}! Welcome to Challenge backend Node js for Alkemy labs`
+    }
+    return msg
+}
+
+
+
+const dataReceived =  (req, res, next) => {
+    const { name, last_name, email, username, password } = req.body;
     if (!name || !last_name || !email || !username || !password) {
         return res.status(400).json({
             error: 'faltan campos'
         })
     }
- 
+
     if (validateEmail(email) === false) {
         return res.status(400).json({
             error: 'Email incorrecto'
@@ -26,7 +40,13 @@ const dataReceived = (req, res, next) => {
         })
     }
 
-    
+    sgMail.send(sendEmail(email, name)).then(() => {
+        console.log('Message sent')
+    }).catch((error) => {
+        console.log(error.response.body)
+    })
+
+
 
     next()
 }
@@ -61,7 +81,6 @@ function generatedToken(name, id) {
     const payload = {
         nameUser: name,
         idUser: id
-
     }
 
     var token = jwt.sign(payload, jwtClave);
@@ -107,15 +126,16 @@ const validateJwt = (req, res, next) => {
         next()
     });
 }
+
 const validateUser = async (email, password) => {
     const userSelected = await models.user.findOne({
         where: { email: email }
     })
     if (userSelected) {
         if (userSelected.password == password.trim()) {
-            codeToken = generatedToken(userSelected.username, userSelected.id )
-            const dataUser = { name: userSelected.username, id: userSelected.id}
-                                                          
+            codeToken = generatedToken(userSelected.username, userSelected.id)
+            const dataUser = { name: userSelected.username, id: userSelected.id }
+
             return { codeToken, dataUser };
         }
         else {
@@ -137,4 +157,4 @@ function validateEmail(value) {
 }
 
 
-module.exports = {dataLogin, validatekeyCode, validateEmail, generatedToken, validateUser, validateJwt, dataReceived}
+module.exports = { dataLogin, validatekeyCode, validateEmail, generatedToken, validateUser, validateJwt, dataReceived }

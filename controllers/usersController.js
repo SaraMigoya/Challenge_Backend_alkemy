@@ -4,7 +4,7 @@ const router = express.Router();
 
 const {dataReceived, dataLogin} = require("../middlewares/authenticated");
 //POST
-router.post("/auth/register", dataReceived, async (req, res) => {
+router.post("/register", dataReceived, async (req, res) => {
 
     
        const { name, last_name, email, username, password } = req.body
@@ -29,7 +29,7 @@ router.post("/auth/register", dataReceived, async (req, res) => {
    })
 
 
-.post("/auth/login", dataLogin, (req, res) => {
+.post("/login", dataLogin, (req, res) => {
     res.status(200).json({
         exito: {
             token: req.token,
