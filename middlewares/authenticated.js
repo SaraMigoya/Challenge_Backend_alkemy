@@ -1,47 +1,25 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 var jwtClave = process.env.JWTPASSWORD
-const sgMail = require("@sendgrid/mail")
-sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-var codeToken;
-const models = require("../models/user");
-
-
-function sendEmail(emailRegister, welcomeUser) {
-
-    const msg = {
-        to: emailRegister,
-        from: "satumigoya@hotmail.com",
-        subject: "Welcome to Challenge backend!",
-        text: `Hello ${welcomeUser}! Welcome to Challenge backend Node js for Alkemy labs`
-    }
-    return msg
-}
-
-
+const sendEmail = require("./sendEmail");
+const { emailPasswordInvalid, missingFields, NotAuthorized } = require("../constants/errors");
 
 const dataReceived =  (req, res, next) => {
     const { name, last_name, email, username, password } = req.body;
     if (!name || !last_name || !email || !username || !password) {
-        return res.status(400).json({
-            error: 'faltan campos'
-        })
+        return res.status(400).json(missingFields)
     }
 
     if (validateEmail(email) === false) {
-        return res.status(400).json({
-            error: 'Email incorrecto'
-        })
+        return res.status(400).json(emailPasswordInvalid)
     }
 
     if (validatekeyCode(password) === false) {
-        return res.status(400).json({
-            error: 'Password incorrecto'
-        })
+        return res.status(400).json(emailPasswordInvalid)
     }
 
     sgMail.send(sendEmail(email, name)).then(() => {
-        console.log('Message sent')
+
     }).catch((error) => {
         console.log(error.response.body)
     })
@@ -55,9 +33,7 @@ const dataLogin = async (req, res, next) => {
     const { email, password } = req.body
 
     if (!email || !password) {
-        res.status(400).json({
-            error: 'faltan campos'
-        })
+        res.status(400).json(missingFields)
     }
     let access = await validateUser(email, password)
     if (access) {
@@ -67,11 +43,7 @@ const dataLogin = async (req, res, next) => {
     }
 
     else {
-        res.status(401).json({
-
-            error: "email o password invalidas"
-
-        })
+        res.status(401).json(emailPasswordInvalid)
     }
 }
 
@@ -120,7 +92,7 @@ const validateJwt = (req, res, next) => {
 
     jwt.verify(codeToken, jwtClave, (err, decoded) => {
         if (err) {
-            res.send('No está autorizado');
+            res.send(NotAuthorized);
         }
         req.user = decoded;
         next()

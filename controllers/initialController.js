@@ -3,7 +3,8 @@ const router = express.Router();
 const models = require("../models/character");
 const modelsMovies = require("../models/movie");
 const modelGender = require("../models/gender")
-const modelsUser = require ("../models/user")
+const modelsUser = require ("../models/user");
+const { succes } = require("../constants/messagges");
 
 //USERS
 router.post("/users", async (req,res) => {
@@ -30,7 +31,7 @@ router.post("/users", async (req,res) => {
         modelsUser.user.create(e)
     });
 
-    res.status(200).json({ message: "Usuario creado con éxito!" })
+    res.status(200).json(succes)
 
 })
     .post("/movies", async (req,res) => {
@@ -56,7 +57,7 @@ router.post("/users", async (req,res) => {
         modelsMovies.movie.create(e)
     });
 
-    res.status(200).json({ message: "Película creada con éxito!" })
+    res.status(200).json(succes)
 
 })
     .post("/characters", async (req,res) => {
@@ -84,7 +85,7 @@ router.post("/users", async (req,res) => {
         models.character.create(e)
     });
 
-    res.status(200).json({ message: "Personaje creada con éxito!" })
+    res.status(200).json(succes)
 
 })
 
@@ -110,7 +111,7 @@ router.post("/users", async (req,res) => {
         modelGender.gender.create(e)
     });
 
-    res.status(200).json({ message: "Género creado con éxito!" })
+    res.status(200).json(succes)
 
 })
 

@@ -1,6 +1,8 @@
 const express = require("express");
 const models = require("../models/character")
 const modelsMovies = require("../models/movie");
+const { succes, errorInvalid, deletedItem, errorDelet } = require("../constants/errors");
+const { errorCreate } = require("../constants/messagges");
 
 const router = express.Router();
 
@@ -22,10 +24,10 @@ router.post("/", async (req, res) => {
     if (movie) {
 
         const character = await models.character.create(newCharacter)
-        if (character) return res.status(200).json({ exito: " el personaje se creó exitosamente", character });
+        if (character) return res.status(200).json({ exito: succes, character });
     }
     res.status(400).json({
-        message: "No se pudo crear el personaje "
+        message: errorCreate
     })
 
 
@@ -47,7 +49,7 @@ router.post("/", async (req, res) => {
             })
 
             if (characters && name.toLocaleLowerCase == characters.name.toLocaleLowerCase) return res.status(200).json({ exito: `El personaje encontrado es: ${characters.name}` });
-            else return res.status(400).json({ message: "Lo sentimos! No pudimos acceder a esa información" }) 
+            else return res.status(400).json(errorInvalid) 
 
         }
 
@@ -58,7 +60,7 @@ router.post("/", async (req, res) => {
             })
 
             if (characters && age.toLocaleLowerCase == characters.age.toLocaleLowerCase) return res.status(200).json({ exito: `La edad del personaje es ${characters.age} ` });
-            else return res.status(400).json({ message: "¡Lo sentimos! No pudimos acceder a esa información" })
+            else return res.status(400).json(errorInvalid)
         }
 
         if (movies) {
@@ -68,7 +70,7 @@ router.post("/", async (req, res) => {
             })
 
             if (characters && movies == characters.MovieId) return res.status(200).json({ exito: `El id de la película encontrada es: ${characters.MovieId}` });
-            else return res.status(400).json({ message: "¡Lo sentimos! No pudimos acceder a esa información" })
+            else return res.status(400).json(errorInvalid)
         }
 
         const allCharacter = await models.character.findAll({
@@ -76,8 +78,8 @@ router.post("/", async (req, res) => {
 
         });
 
-        if (allCharacter.length > 0) return res.status(200).json({ exito: "Operación exitosa", allCharacter });
-        else return res.status(400).json({ message: "Aún no hay personajes guardados" })
+        if (allCharacter.length > 0) return res.status(200).json( allCharacter);
+        else return res.status(400).json(errorInvalid)
     })
 
     .get("/details", async (req, res) => {
@@ -95,8 +97,8 @@ router.post("/", async (req, res) => {
 
             ]
         });
-        if (allCharacter.length > 0) return res.status(200).json({ exito: "operación exitosa", allCharacter });
-        return res.status(400).json({ message: "error. no se pudo traer info" })
+        if (allCharacter.length > 0) return res.status(200).json(succes);
+        return res.status(400).json(errorInvalid)
     })
 
 
@@ -108,8 +110,8 @@ router.post("/", async (req, res) => {
         })
 
 
-        if (updateCharacter) return res.status(200).json({ messege: `${req.body.name} fue actualizado con exito` })
-        return res.status(400).json({ message: `No se encontró el personaje con el ID: ${req.params.id}` })
+        if (updateCharacter) return res.status(200).json({ messege: `${req.body.name} ${succes}` })
+        return res.status(400).json(errorInvalid)
     })
     ///DELETE
     .delete("/:id", async (req, res) => {
@@ -118,9 +120,9 @@ router.post("/", async (req, res) => {
             where: { id: req.params.id }
         })
 
-        if (deleteCharacter) return res.status(200).json({ messege: `El personaje fue eliminado con éxito` })
+        if (deleteCharacter) return res.status(200).json(deletedItem)
         return res.status(400).json({
-            message: `No se pudo eliminar el personaje con el ID: ${req.params.id}`
+            message: `${errorDelet}: ${req.params.id}`
         })
     })
 

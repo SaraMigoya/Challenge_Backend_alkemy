@@ -1,7 +1,8 @@
 const express = require("express");
 const models = require("../models/movie")
 const modelCharacter = require("../models/character")
-const modelGender = require("../models/gender")
+const modelGender = require("../models/gender");
+const { succes, errorInvalid, errorCreate, deletedItem, errorDelet } = require("../constants/messagges");
 const router = express.Router();
 
 
@@ -16,16 +17,14 @@ router.post("/", async (req, res) => {
         score
     }
 
-
     const movie = await models.movie.create(newMovie)
-    if (movie) return res.status(200).json({ exito: " la película o serie se creó exitosamente", movie });
+    if (movie) return res.status(200).json(succes, movie);
 
     res.status(400).json({
-        message: "No se pudo crear la película o serie"
+        message: errorCreate
     })
 
 })
-
 
     /// GET
     .get("/", async (req, res) => {
@@ -41,8 +40,8 @@ router.post("/", async (req, res) => {
             })
 
 
-            if (allGenders && genre == allGenders.MovieId) return res.status(200).json({ exito: `el género es: ${allGenders.MovieId}` });
-            else return res.status(400).json({ message: "¡Lo sentimos! No pudimos acceder a esa información. Es probable que no exista" })
+            if (allGenders && genre == allGenders.MovieId) return res.status(200).json(allGenders.MovieId);
+            else return res.status(400).json(errorInvalid)
         }
 
         if (name) {
@@ -52,8 +51,8 @@ router.post("/", async (req, res) => {
             })
 
 
-            if (movies && name.toLocaleLowerCase == movies.title.toLocaleLowerCase) return res.status(200).json({ exito: `el nombre de la película es: ${movies.title}` });
-            else return res.status(400).json({ message: "error. no se pudo traer info" })
+            if (movies && name.toLocaleLowerCase == movies.title.toLocaleLowerCase) return res.status(200).json(movies.title);
+            else return res.status(400).json(errorInvalid)
         }
 
 
@@ -65,10 +64,10 @@ router.post("/", async (req, res) => {
             });
 
             //dataCreat.sort(function (a, b) { return a - b })
-            dataCreat.reverse(function(a,b){return a - b})
+            dataCreat.reverse(function (a, b) { return a - b })
 
-            if (dataCreat.length > 0) return res.status(200).json({ exito: "operación exitosa", dataCreat });
-            else return res.status(400).json({ message: "no" })
+            if (dataCreat.length > 0) return res.status(200).json(dataCreat);
+            else return res.status(400).json(errorInvalid)
 
 
         }
@@ -79,15 +78,15 @@ router.post("/", async (req, res) => {
         });
 
 
-        if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies });
-        else return res.status(400).json({ message: "Aún no hay películas guardados" })
+        if (allMovies.length > 0) return res.status(200).json(allMovies);
+        else return res.status(400).json(errorInvalid)
 
     })
 
     .get("/details", async (req, res) => {
 
         const allMovies = await models.movie.findAll({
-            attributes: ["id","image", "title", "creation_date", "score"],
+            attributes: ["id", "image", "title", "creation_date", "score"],
             include: [
 
                 {
@@ -100,19 +99,17 @@ router.post("/", async (req, res) => {
             ]
         });
         if (allMovies.length > 0) return res.status(200).json({ exito: "operación exitosa", allMovies });
-        return res.status(400).json({ message: "error. no se pudo traer info" })
+        return res.status(400).json(errorInvalid)
     })
 
     /// PUT
     .put("/:id", async (req, res) => {
 
-
         const updateMovie = await models.movie.update(req.body, {
             where: { id: req.params.id }
         })
 
-
-        if (updateMovie) return res.status(200).json({ messege: `${req.body.title} fue actualizado con exito` })
+        if (updateMovie) return res.status(200).json(req.body.title, updateSucces)
         return res.status(400).json({ message: `No se encontro la pelicula/serie con el ID: ${req.params.id}` })
     })
 
@@ -123,10 +120,8 @@ router.post("/", async (req, res) => {
             where: { id: req.params.id }
         })
 
-        if (deleteMovie) return res.status(200).json({ messege: `la pelicula/serie fue eliminado con exito` })
-        return res.status(400).json({
-            message: `No se pudo eliminar la pelicula/serie con el ID: ${req.params.id}`
-        })
+        if (deleteMovie) return res.status(200).json(deletedItem)
+        return res.status(400).json(errorDelet)
     })
 
 

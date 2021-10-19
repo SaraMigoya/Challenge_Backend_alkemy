@@ -3,6 +3,7 @@ const models = require ("../models/user")
 const router = express.Router();
 
 const {dataReceived, dataLogin} = require("../middlewares/authenticated");
+const { succes, errorCreate } = require("../constants/messagges");
 //POST
 router.post("/register", dataReceived, async (req, res) => {
 
@@ -19,11 +20,9 @@ router.post("/register", dataReceived, async (req, res) => {
    
    
        const user = await models.user.create(newUser)
-       if (user) return res.status(200).json({exito: " el usuario se creó exitosamente", user} );
+       if (user) return res.status(200).json(succes, user );
    
-       res.status(400).json({
-           message: "No se pudo crear el usuario"
-       })
+       res.status(400).json(errorCreate)
     
    
    })
