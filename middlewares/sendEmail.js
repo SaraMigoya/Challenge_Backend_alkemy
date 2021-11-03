@@ -10,7 +10,7 @@ function sendEmail(emailRegister, welcomeUser) {
         subject: "Welcome to Challenge backend!",
         text: `Hello ${welcomeUser}! Welcome to Challenge backend Node js for Alkemy labs`
     }
-    return msg
+  
 }
 
 module.exports = {sendEmail}

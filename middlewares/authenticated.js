@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 var jwtClave = process.env.JWTPASSWORD
 const sendEmail = require("./sendEmail");
 const { emailPasswordInvalid, missingFields, NotAuthorized } = require("../constants/errors");
-
+const sgMail = require("@sendgrid/mail")
 const dataReceived =  (req, res, next) => {
     const { name, last_name, email, username, password } = req.body;
     if (!name || !last_name || !email || !username || !password) {
